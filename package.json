@@ -1,6 +1,6 @@
 {
   "name": "vue-icon-picker",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -12,7 +12,8 @@
     "@fortawesome/free-brands-svg-icons": "^5.3.1",
     "@fortawesome/free-solid-svg-icons": "^5.3.1",
     "@fortawesome/vue-fontawesome": "^0.1.1",
-    "vue": "^2.5.17"
+    "vue": "^2.5.17",
+    "vue-virtual-scroll-list": "^1.2.8"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.0",
@@ -50,7 +51,7 @@
     "not ie <= 8"
   ],
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/drmovi/vue-icon-picker"
+    "type": "git",
+    "url": "https://github.com/drmovi/vue-icon-picker"
   }
 }

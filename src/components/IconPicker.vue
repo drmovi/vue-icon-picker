@@ -3,11 +3,12 @@
         <div class="search">
             <input v-model="search"/>
         </div>
-        <ul class="container">
+        <ul ref="list" class="container">
             <li @click="value = null" :class="[value ? null : 'selected','reset']">
                 <font-awesome-icon icon="ban" @click="value = null"/>
             </li>
-            <li v-for="icon in filteredIcons" :key="icon.iconName" :class="isSelected(icon) ? 'selected' : null" @click="makeSelection(icon)">
+            <li v-for="(icon,index) in filteredIcons" :key="index" :class="isSelected(icon) ? 'selected' : null" @click="makeSelection(icon)"
+                :id="icon.iconName">
                 <font-awesome-icon :icon="[icon.prefix,icon.iconName]" @click="makeSelection(icon)"/>
             </li>
         </ul>
@@ -27,12 +28,26 @@
 
     export default {
         name: "IconPicker",
+        props: {
+            value: {
+                default: null
+            }
+        },
         data: function () {
             return {
                 search: '',
                 icons: {...fas, ...fab},
-                value: null
+                height: 20,
             }
+        },
+        mounted: function () {
+            try {
+                this.$refs.list.getElementsByClassName('selected')[0].scrollIntoView();
+                // eslint-disable-next-line
+            } catch (e) {
+            }
+
+
         },
         computed: {
             filteredIcons: function () {
@@ -45,10 +60,10 @@
         },
         methods: {
             makeSelection: function (icon) {
-                this.value = {
+                this.$emit('input', {
                     type: 'fontawesome',
                     name: icon.iconName
-                }
+                });
             },
             isSelected: function (icon) {
                 return this.value && icon.iconName === this.value.name && this.value.type === 'fontawesome';
@@ -57,12 +72,19 @@
     }
 </script>
 <style scoped>
+    .container {
+        width: 300px;
+        height: 300px;
+    }
+
     ul {
+        box-sizing: border-box;
+        overflow-y: scroll;
         list-style: none;
-        margin: 0;
         border: 1px solid rgba(0, 0, 0, .2);
         border-radius: 10px;
         padding: 10px;
+        margin: 0;
     }
 
     li {
@@ -78,14 +100,16 @@
         border-radius: 50px;
         transition: all .2s ease-in-out;
     }
-    li.reset{
-        transition:none;
+
+    li.reset {
+        transition: none;
         color: red;
     }
-    li.reset:hover,li.reset.selected{
+
+    li.reset:hover, li.reset.selected {
         transform: none;
         background-color: red;
-        color:white;
+        color: white;
     }
 
     li:hover {
@@ -104,14 +128,14 @@
     }
 
     input {
-        margin: 2px;
-        width: 99%;
+        margin: 5px;
+        width: 100%;
         display: inline-block;
-        padding: 5px;
         font-size: 1rem;
         line-height: 1.5;
         color: #495057;
         background-clip: padding-box;
+        background-color: transparent;
         border: none;
         transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
     }
