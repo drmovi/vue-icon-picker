@@ -35,7 +35,7 @@
 
     library.add(fas, fab);
     export default {
-        name: "IconPicker",
+        name: "VueIconPicker",
         components: {
             FontAwesomeIcon,
             'chrome-picker': Chrome

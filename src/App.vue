@@ -1,12 +1,12 @@
 <template>
     <div id="app">
 
-        <IconPicker v-model="icon"/>
+        <vue-icon-picker v-model="icon"/>
     </div>
 </template>
 
 <script>
-    import IconPicker from './components/IconPicker.vue'
+    import VueIconPicker from './vue-icon-picker'
 
     export default {
         name: 'app',
@@ -16,7 +16,7 @@
             }
         },
         components: {
-            IconPicker
+            VueIconPicker
         }
     }
 </script>
@@ -29,7 +29,6 @@
         text-align: center;
         color: #2c3e50;
         margin-top: 60px;
-        width:300px;
-        height:300px;
+
     }
 </style>
