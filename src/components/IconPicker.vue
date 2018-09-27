@@ -1,48 +1,71 @@
 <template>
     <div class="container">
-        <div class="search">
-            <input v-model="search"/>
+        <div class="search" v-click-outside="hideColorPicker">
+            <div @click="toggleColorPicker($event)">
+                <font-awesome-icon v-if="icon" :icon="icon.iconName" class="icon-preview" :style="{color:color.hex}"/>
+            </div>
+            <input v-model="search" @keyup="scrollToSelected"/>
+            <div v-show="colorPickerPosition" :style="colorPickerPosition">
+                <chrome-picker v-model="color"/>
+                <button type="button" class="btn" @click.prevent="color = {}">Clear Color</button>
+            </div>
+
         </div>
-        <ul ref="list" class="container">
-            <li @click="value = null" :class="[value ? null : 'selected','reset']">
-                <font-awesome-icon icon="ban" @click="value = null"/>
+        <ul ref="list" :style="{'height':height}">
+            <li @click="resetValue" :class="[value ? null : 'selected','reset']">
+                <font-awesome-icon icon="ban" @click="resetValue"/>
             </li>
-            <li v-for="(icon,index) in filteredIcons" :key="index" :class="isSelected(icon) ? 'selected' : null" @click="makeSelection(icon)"
-                :id="icon.iconName">
-                <font-awesome-icon :icon="[icon.prefix,icon.iconName]" @click="makeSelection(icon)"/>
+            <li v-for="(filteredIcon,index) in filteredIcons" :key="index" :class="isSelected(filteredIcon) ? 'selected' : null"
+                @click="icon = filteredIcon">
+                <font-awesome-icon :icon="[filteredIcon.prefix,filteredIcon.iconName]"/>
             </li>
         </ul>
     </div>
 </template>
 
+
 <script>
-    import Vue from 'vue'
     import {library} from '@fortawesome/fontawesome-svg-core'
     import {fas} from '@fortawesome/free-solid-svg-icons'
     import {fab} from '@fortawesome/free-brands-svg-icons'
     import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
+    import {Chrome} from 'vue-color'
+    import ClickOutside from 'vue-click-outside'
+
 
     library.add(fas, fab);
-
-    Vue.component('font-awesome-icon', FontAwesomeIcon);
-
     export default {
         name: "IconPicker",
+        components: {
+            FontAwesomeIcon,
+            'chrome-picker': Chrome
+        },
+        directives: {
+            ClickOutside
+        },
         props: {
-            value: {
-                default: null
+            value: null,
+            height: {
+                type: String,
+                default: '300px'
             }
         },
         data: function () {
             return {
                 search: '',
                 icons: {...fas, ...fab},
-                height: 20,
+                icon: null,
+                color: {},
+                colorPickerPosition: null,
+                popupItem: null
             }
         },
         mounted: function () {
+            this.popupItem = this.$el;
             try {
-                this.$refs.list.getElementsByClassName('selected')[0].scrollIntoView();
+                this.icon = this.icons[Object.keys(this.icons).find(icon => this.icons[icon].iconName === this.value.name)];
+                this.color = {hex: this.value.color};
+                this.scrollToSelected();
                 // eslint-disable-next-line
             } catch (e) {
             }
@@ -59,22 +82,53 @@
 
         },
         methods: {
-            makeSelection: function (icon) {
-                this.$emit('input', {
-                    type: 'fontawesome',
-                    name: icon.iconName
-                });
+            scrollToSelected: function () {
+                try {
+                    this.$refs.list.getElementsByClassName('selected')[0].scrollIntoView();
+                    // eslint-disable-next-line
+                } catch (e) {
+                }
             },
             isSelected: function (icon) {
                 return this.value && icon.iconName === this.value.name && this.value.type === 'fontawesome';
+            },
+            resetValue: function () {
+                this.icon = null;
+                this.color = {};
+                this.colorPickerPosition = null;
+            },
+            toggleColorPicker: function (e) {
+                this.colorPickerPosition = this.colorPickerPosition ? null : {
+                    position: 'absolute',
+                    zIndex: 9999,
+                    top: `${e.pageY}px`,
+                    left: `${e.pageX}px`,
+
+                }
+            },
+            hideColorPicker: function () {
+                this.colorPickerPosition = null;
+            }
+        },
+        watch: {
+            icon: function (value) {
+                this.$emit('input', value ? {...this.value, name: value.iconName, type: 'fontawesome'} : null);
+            },
+            color: function (value) {
+                let val = this.value;
+                if (value.hex)
+                    val.color = value.hex;
+                else
+                    delete val.color;
+                this.$emit('input', val)
             }
         }
     }
+
 </script>
 <style scoped>
     .container {
-        width: 300px;
-        height: 300px;
+        position: relative;
     }
 
     ul {
@@ -128,15 +182,17 @@
     }
 
     input {
-        margin: 5px;
-        width: 100%;
-        display: inline-block;
+        display: block;
+        width: calc(100% - 10px);
+        border: 1px solid rgba(0, 0, 0, .2);
+        padding: 5px;
+        border-radius: 10px;
+        margin: 5px 0;
         font-size: 1rem;
         line-height: 1.5;
         color: #495057;
         background-clip: padding-box;
         background-color: transparent;
-        border: none;
         transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
     }
 
@@ -145,9 +201,34 @@
     }
 
     .search {
-        border: 1px solid rgba(0, 0, 0, .2);
-        border-radius: 10px;
         margin-bottom: 5px;
+        position: relative;
     }
 
+    .icon-preview {
+        cursor: pointer;
+        border: 1px solid rgba(0, 0, 0, .2);
+        padding: 10px;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+    }
+
+    .btn {
+        color: white;
+        width: 100%;
+        vertical-align: middle;
+        user-select: none;
+        border: 1px solid transparent;
+        padding: 5px;
+        outline: none;
+        box-shadow: 0 0 2px rgba(0, 0, 0, .3), 0 4px 8px rgba(0, 0, 0, .3);
+        background-color: #bd2130;
+        cursor: pointer;
+    }
+
+    .btn:active {
+        color: #fff;
+        background-color: #900b18;
+    }
 </style>

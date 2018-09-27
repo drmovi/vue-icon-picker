@@ -12,7 +12,7 @@
         name: 'app',
         data: function () {
             return {
-                icon: {name: 'newspaper', type: 'fontawesome'}
+                icon: {name: 'newspaper', type: 'fontawesome',color:"#AD2727"}
             }
         },
         components: {
@@ -29,5 +29,7 @@
         text-align: center;
         color: #2c3e50;
         margin-top: 60px;
+        width:300px;
+        height:300px;
     }
 </style>

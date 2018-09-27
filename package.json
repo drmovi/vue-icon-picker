@@ -1,11 +1,14 @@
 {
   "name": "vue-icon-picker",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
+  },
+  "browser": {
+    "./sfc": "src/components/IconPicker.vue"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.4",
@@ -13,7 +16,8 @@
     "@fortawesome/free-solid-svg-icons": "^5.3.1",
     "@fortawesome/vue-fontawesome": "^0.1.1",
     "vue": "^2.5.17",
-    "vue-virtual-scroll-list": "^1.2.8"
+    "vue-click-outside": "^1.0.7",
+    "vue-color": "^2.6.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.0",
